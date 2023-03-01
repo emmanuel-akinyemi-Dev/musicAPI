@@ -1,32 +1,36 @@
+const async = require('async.js');
 const JWT = require('jsonwebtoken');
 const dotenv = require('dotenv').config() ;
 
 
 
 
-exports.verifyUser = (req, res, next) => {
+exports.verifyUser = async (req, res, next) => {
 
     try {
 
-    const token = req.headers.Authentication
+        const data = req.headers.authorization ;
+        const token = data.split(" ")[1] 
+        const decoded = JWT.verify( token ,  process.env.JWT_SECRET ); 
 
-    const verified =  jwt.verify(token, process.env.JWT_SECRET)
-
-    req.userData = verified
-
- next();
-
+        req.userData = decoded;
+         
+        next();
+ 
 } 
-catch(error){
-
-     return null
-        }
+catch(err){
+console.log(err)
+ res.status(403).json({
+    message: "Authentication failed",
+    error : err
+}) 
   }
+}
 
         
  exports.sendToken = async (email, password)=>{
     try{
-   return  JWT.sign({email:email, password:password}, process.env.JWT_SECRET, {expiresIn : '2w'}) 
+   return  JWT.sign({email:email, password:password}, process.env.JWT_SECRET ) 
        } 
        
    catch(err){

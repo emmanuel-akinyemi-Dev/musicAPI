@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 require('dotenv').config() ;
-const {genrateSalt} = require('./generateSalt');
  
-exports.encryptPassword =async (  password, salt)=>{ 
+ 
+exports.encryptPassword =async (password, salt)=>{ 
     try{
       return  await bcrypt.hash(password, salt )
     }
