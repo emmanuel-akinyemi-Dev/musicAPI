@@ -1,8 +1,8 @@
 const Users = require ('../models/userschema');
-const {getUsers,createUser, getOneUser, removeUser,editPassword } = require('../repository/userRepo'); 
+const {getUsers,createUser, getOneUser, removeUser,editUser } = require('../repository/userRepo'); 
 const {encryptPassword, verifyPassword} = require( '../utils/encryptPassword');
 const { generateSalt } = require('../utils/generateSalt');
-const {sendToken } = require('../middleware/auth'); 
+const {sendToken, decodeToken } = require('../middleware/auth'); 
 
 exports.getAllUsers = async (req, res, next ) =>{
 
@@ -163,19 +163,19 @@ exports.userLogin =  async(req, res, next)=>{
     
 }
 
-exports.editUser = async(req, res, next)=>{
-    const userExists = await getOneUser( {email: req.body.email})
+exports.editUserData = async(req, res, next)=>{ 
+  const decoded = await decodeToken(req.headers.authorization.split(" ")[1] ) 
+    const userExists = await getOneUser( {email: decoded.email})
     if (userExists === null){
         return res.status(404).json({message:'user does not exist',  
         request:{
           type: 'POST',
-          message: 'you can signup using this link ',
-          url : `http://localhost:${process.env.PORT||5000}/api/v1/users/signup` 
-
-      }}) 
-    } 
-        
-         const edited = await  editPassword(userExists._id, [{ "propName" : "password", "value": newPassword } ])
+          message: 'you can signup using this link',
+          url : `http://localhost:${process.env.PORT||5000}/api/v1/users/signup`  
+      }
+    }) 
+ }  
+         const edited = await  editUser(userExists._id, req.body)
          if (edited === null){
             return res.status(500).json({
                 message:'something went wrong internally',
@@ -187,7 +187,7 @@ exports.editUser = async(req, res, next)=>{
             }) 
         }
             return res.status(201).json({
-                message:'password changed successfully',
+                message:'data updated successfully',
                 newdata:edited,
                 request:{
                     type: 'POST',
@@ -232,7 +232,7 @@ exports.editUser = async(req, res, next)=>{
                         } 
                     })
                  } 
-                 const edited = await  editPassword(userExists._id, [{ "propName" : "password", "value": newPassword } ])
+                 const edited = await  editUser(userExists._id, [{ "propName" : "password", "value": newPassword } ])
                  if (edited === null){
                     return res.status(500).json({
                         message:'something went wrong internally',
@@ -253,3 +253,47 @@ exports.editUser = async(req, res, next)=>{
                         } 
                     })
  }  
+
+ exports.editUserImage = async(req, res, next)=>{ 
+    const decoded = await decodeToken(req.headers.authorization.split(" ")[1] ) 
+      const userExists = await getOneUser( {email: decoded.email})
+      if (userExists === null){
+          return res.status(404).json({message:'user does not exist',  
+          request:{
+            type: 'POST',
+            message: 'you can signup using this link',
+            url : `http://localhost:${process.env.PORT||5000}/api/v1/users/signup`  
+        }
+      }) 
+
+      
+   }  
+        const file = req.file
+        if(file){
+            var replaceAvatar = file.path
+            console.log(replaceAvatar)
+        }
+           const edited = await  editUser(userExists._id, [{ "propName" : "avatar", "value": replaceAvatar } ])
+           console.log(edited)
+           console.log(replaceAvatar)
+           console.log(userExists._id)
+           if (edited === null){ 
+              return res.status(500).json({
+                  message:'something went wrong internally 2',
+                  request:{
+                      type: 'POST',
+                      message: 'you can signup using this link ',
+                      url : `http://localhost:${process.env.PORT||5000}/api/v1/users/signup`  
+                  } 
+              }) 
+          }
+              return res.status(201).json({
+                  message:'image updated succesfully',
+                  newdata:edited,
+                  request:{
+                      type: 'POST',
+                      message: 'you can login using this link',
+                      url : `http://localhost:${process.env.PORT||5000}/api/v1/users/login`  
+                  } 
+              })
+   }

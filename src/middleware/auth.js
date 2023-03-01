@@ -37,8 +37,18 @@ console.log(err)
         return null
        }
         
-        }
+        };
     
+
+ exports.decodeToken =  async (req)=> {
+   try {
+      return JWT.decode(req);
+}
+catch(err){
+    console.log(err) ;
+    return null;
+}
+};
  
 
 

@@ -51,8 +51,8 @@ exports.removeUser = async(query)=>{
         return null;
     
     }
- } 
- exports.editPassword = async(id, data)=>{ 
+ }  
+ exports.editUser = async(id, data)=>{ 
     try{
         const newData =  {}; 
         for (const updates  of data ){     
@@ -62,7 +62,8 @@ exports.removeUser = async(query)=>{
          
 
     }
-    catch{
+    catch(err){
+        console.log (err)
         return null
     }
  }
