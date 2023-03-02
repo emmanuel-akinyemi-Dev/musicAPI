@@ -4,7 +4,7 @@ const {addProduct, getOneProduct, getProducts,removeProduct, editProduct } = req
 
  
 
-exports.getProducts = async (req, res, next ) =>{
+exports.getAllProduct = async (req, res, next ) =>{
 
     const products = await  getProducts({}); 
   

@@ -122,7 +122,7 @@ exports.removeSong = async(req, res, next) =>{
         }   
     }) 
 } 
-    deleteSong( {id: songExists._id}); 
+    await deleteSong( {id: songExists._id}); 
    res.status(200).json({message:'Song removed successfully',  
     request:{
         type: 'POST',

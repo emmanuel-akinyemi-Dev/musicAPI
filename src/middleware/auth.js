@@ -1,6 +1,6 @@
-const async = require('async.js');
+ 
 const JWT = require('jsonwebtoken');
-const dotenv = require('dotenv').config() ;
+ 
 
 
 
@@ -10,14 +10,20 @@ exports.verifyUser = async (req, res, next) => {
     try {
 
         const data = req.headers.authorization ;
+        if (!data){
+            return  res.status(403).json({
+                message: "Authentication failed",
+                 
+            }) 
+              } 
         const token = data.split(" ")[1] 
         const decoded = JWT.verify( token ,  process.env.JWT_SECRET ); 
 
         req.userData = decoded;
          
         next();
- 
-} 
+   }
+  
 catch(err){
 console.log(err)
  res.status(403).json({

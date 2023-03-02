@@ -6,7 +6,7 @@ const {uploads} = require( '../../middleware/multer')
 
 const getFiles = uploads.fields([{name:'song', maxCount: 1 },{name:'songCover', maxCount: 1}]);
 
-  router.get ('/allsongs', getAllSongs);
+  router.get ('/', getAllSongs);
   router.get ('/findsong', findOneSong);
   router.post ('/upload',verifyUser,   getFiles, addSong); 
   router.patch ('/editsong', verifyUser, getFiles, editSong); 

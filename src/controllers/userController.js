@@ -86,8 +86,10 @@ exports.createUser = async (req, res , next)=>{
         
     }
  }
-exports.deleteUser = async(req, res, next) =>{
-    const userExists = await getOneUser( {email: req.body.email})
+exports.deleteUser = async(req, res, next) =>{ 
+    
+    const decoded = await decodeToken(req.headers.authorization.split(" ")[1] ) 
+    const userExists = await getOneUser( {email: decoded.email})
     
     
     if (userExists ){
