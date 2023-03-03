@@ -1,3 +1,3 @@
-# musicAPI
- music market
-ill work on this later
+## musicAPI
+ 1. This API is intended to serve as a music library with both paid and unpaid Audio tracks.
+ 2. To learn how to interact with the endpoints, go to the API instruction sheet.

@@ -13,7 +13,7 @@ const routes = require('./src/routes/routes')
   //mongoose connection
   mongoose.set('strictQuery', true); 
   mongoose.connect(Uri,  {useNewUrlParser: true} );
-  mongoose.Promise = global.Promise; 
+  mongoose.Promise = global.Promise;  
     
  //swagger connection
  const options = {

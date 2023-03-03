@@ -1,6 +1,6 @@
 
 const {   getSongs, getOneSong,editSong,deleteSong  } = require('../repository/songRepo');  
-const {createPlaylist, getPlaylists,getAplaylist,removeSong, addSong} = require('../repository/playlistRepo');
+const {createPlaylist, getPlaylists,getAplaylist,removeSong,editPlaylist, addSong} = require('../repository/playlistRepo');
 const { addSongToAlbum } = require('../repository/albumRepo');
   
 
@@ -32,7 +32,7 @@ exports.createPlaylist = async (req, res , next)=>{
     console.log(playlist)
     return res.status(400).json({message: 'Playlist already exist' ,
     request:{
-        type:'POST',
+        type:'POST', 
         description: 'add songs to playlist',
         link: `http://localhost:${process.env.PORT}/api/v1/playlist/addsong`
   }
@@ -53,8 +53,8 @@ exports.createPlaylist = async (req, res , next)=>{
                   link: `http://localhost:${process.env.PORT}/api/songs/allsongs`
               }
           });  
- }; 
-
+  }; 
+ 
 exports.removeSong = async(req, res, next) =>{
    const playlist = await getAplaylist ({_id : req.params.id} )
    if (!playlist){
@@ -67,9 +67,20 @@ exports.removeSong = async(req, res, next) =>{
     })  
    }
 
-   console.log(playlist)
-   //console.log (playlist.song.indexOf(req.body.id) )
-   
+   const songArray = playlist.song  
+    const remove = await removeSong(songArray, req.body.id) 
+    const newArray = await editPlaylist({_id : req.params.id} , [{ propName : "song", value: remove}])
+    console.log(newArray)
+    console.log(remove)
+    if (newArray=== null){
+        return res.status(400).json({message:'couldnt delete song',  
+        request:{
+            type: 'POST',
+            message: 'you can signup using this link ',
+            url : `http://localhost:${process.env.PORT||5000}/api/users/signup`  
+        }
+    })
+}
    res.status(200).json({message:'Song removed successfully',  
     request:{
         type: 'POST',
