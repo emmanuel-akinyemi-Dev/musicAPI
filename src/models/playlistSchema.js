@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const playListSchema = new mongoose.Schema({ 
     
     playlistTitle: {type : String, required : true} ,
-    song: [{type : mongoose.Schema.Types.ObjectId, ref : 'Song'  }]  
+    songs: [{type : mongoose.Schema.Types.ObjectId, ref : 'Song'  }]  
 
     });
 

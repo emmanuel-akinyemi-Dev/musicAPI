@@ -1,11 +1,12 @@
  
  const Song = require('../models/songSchema'); 
+ const Users = require('../models/userschema')
  const Playlist = require('../models/playlistSchema')
  require('dotenv').config() ;
   
  exports.getAplaylist = async (query) => {
     try { 
-     return await Playlist.findById(query).exec();
+     return await Playlist.findById(query).populate('songs').exec();
    
     }
     catch(err){
@@ -13,10 +14,22 @@
     return null 
         }  
 },  
+exports.getplaulistFromUser  = async (query) => {
+    try { 
+        query.playlist
+
+     return  ;
+   
+    }
+    catch(err){
+        console.error(err); 
+    return null 
+        }  
+}, 
 
  exports.getPlaylists = async (query) => {
      try { 
-      return await Playlist.find(query).populate('song').exec();
+      return await Playlist.find(query).populate('songs').exec();
     
      }
      catch(err){
@@ -62,18 +75,12 @@
     }
  };
 
- exports.removeSong = async(songArray, song )=>{
+ exports.removeSong = async(songArray, songId )=>{
     try{
-       let index =  songArray.indexOf(song) 
-        if (index > -1){
-           songArray.splice(index, 1 )
-          return  songArray
-        }
-        // if (index > 0){
-        //     var newArray =   songArray.splice(index, 2 )
-        //     return  songArray
-        // }
- 
+
+      const removed =  songArray.filter(song => song._id != songId) 
+          
+        return  removed
     }
     catch(err){
         console.log(err); 
@@ -99,4 +106,17 @@
        
     }
 }; 
+exports.editUserPlaylalyst = async(id, data)=>{ 
+    try{
+      
+       return await Users.updateOne({_id:id}, {$push: data})
+ 
+         
+
+    }
+    catch(err){
+        console.log (err)
+        return null
+    }
+ }
  

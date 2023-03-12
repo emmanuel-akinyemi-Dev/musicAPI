@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
              default: 'https://i.ibb.co/5Y3m5Y1/default.jpg',
         },
           playlist: { type: [mongoose.Types.ObjectId] ,
-              ref:   'playlist' 
+              ref:   'Playlist' 
           },  
          created_at: Date,  
     });

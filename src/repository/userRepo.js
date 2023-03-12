@@ -10,7 +10,7 @@ require('dotenv').config() ;
 
 exports.getUsers = async (query) => {
     try { 
-     return await Users.find(query).exec();
+     return await Users.find(query).populate('playlist').exec();
    
     }
     catch(err){

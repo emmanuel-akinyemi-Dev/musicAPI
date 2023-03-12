@@ -15,7 +15,7 @@ exports.getSongs = async (query) => {
 }, 
 exports.getOneSong = async (query) => {
     try { 
-      return await  Song.findOne(query).exec(); 
+      return await  Song.find(query).exec(); 
 }
     catch(err){
         console.log(err);
@@ -31,9 +31,7 @@ try{
 }   
  
 catch(err){
-    console.log(err);
-    console.log(query)
-    console.log(newSong) 
+    console.log(err); 
     return null;
 
 }

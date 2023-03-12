@@ -18,7 +18,7 @@ exports.getAlbums = async (query) => {
 }; 
 exports.getOneAlbum = async (query) => {
     try { 
-      return await  Album.findOne(query).populate('songId').exec(); 
+      return await  Album.findOne(query).populate('songId').populate('artistId').exec(); 
 }
     catch(err){
         console.log(err);

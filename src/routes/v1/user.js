@@ -9,7 +9,7 @@ const {uploads} = require('../../middleware/multer')
 router.get('/', getAllUsers) ;
 router.post ('/signup', createUser) ; 
 router.post ('/login', userLogin) ;   
-router.delete ('/delete',verifyUser, deleteUser) ;
+router.delete ('/delete', verifyUser, deleteUser) ;
 router.patch ('/updatepassword', verifyUser, editPassword ) ;
 router.patch ('/updateuserdata',verifyUser, editUserData ) ;
 router.patch ('/updateuserimage',verifyUser, uploads.single('avatar'), editUserImage ) ;

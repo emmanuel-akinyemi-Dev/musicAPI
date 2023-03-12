@@ -90,11 +90,21 @@ exports.deleteUser = async(req, res, next) =>{
     
     const decoded = await decodeToken(req.headers.authorization.split(" ")[1] ) 
     const userExists = await getOneUser( {email: decoded.email})
+     
+    if (!userExists ){
+        return res.status(404).json({message:'user does not exist',
+        request:{
+            type: 'POST',
+            message: 'you can login using this link ',
+            url : `http://localhost:${process.env.PORT||5000}/api/v1/users/login` 
+            }   
+        }) 
     
-    
-    if (userExists ){
+    }
+
         const Authenticate = await verifyPassword(req.body.password, userExists.password)
-        if (Authenticate === null){ 
+
+        if (!Authenticate){ 
             res.status(400).json({message:'Auth failed',
             request:{
                 type: 'POST',
@@ -104,28 +114,17 @@ exports.deleteUser = async(req, res, next) =>{
                 url2 : `http://localhost:${process.env.PORT||5000}/api/v1/users/signup`  
                 }   
             })  
-     }
-     else{
-        removeUser( {id: userExists}) 
+     } 
+        removeUser( {id: userExists.id}) 
         res.status(200).json({message:'user deleted successfully',  
          request:{
            type: 'POST',
            message: 'you can signup using this link ',
            url : `http://localhost:${process.env.PORT||5000}/api/v1/users/signup` 
 
-       }}) 
-       }
-   }
-   else{ 
-    res.status(404).json({message:'user does not exist',
-    request:{
-        type: 'POST',
-        message: 'you can login using this link ',
-        url : `http://localhost:${process.env.PORT||5000}/api/v1/users/login` 
-        }   
-    })   
-   }
-}
+       }})
+    } 
+  
    
 exports.userLogin =  async(req, res, next)=>{
     const userExists = await getOneUser( {email: req.body.email})
@@ -199,7 +198,8 @@ exports.editUserData = async(req, res, next)=>{
             })
  } 
  exports.editPassword = async(req, res, next)=>{
-            const userExists = await getOneUser( {email: req.body.email})
+    const decoded = await decodeToken(req.headers.authorization.split(" ")[1] ) 
+    const userExists = await getOneUser( {email: decoded.email})
             if (userExists === null){
                 return res.status(404).json({message:'user does not exist',  
                 request:{
@@ -212,7 +212,7 @@ exports.editUserData = async(req, res, next)=>{
                const verified = await verifyPassword(req.body.oldPassword, userExists.password); 
                if (verified === false||null){
                 return res.status(401).json({
-                    message:'auth failed, either email or password is incorrect',
+                    message:'old password is incorrect \, please ty again' ,
                     request:{
                         type: 'POST',
                         message: 'you can signup using this link ',
@@ -276,9 +276,7 @@ exports.editUserData = async(req, res, next)=>{
             console.log(replaceAvatar)
         }
            const edited = await  editUser(userExists._id, [{ "propName" : "avatar", "value": replaceAvatar } ])
-           console.log(edited)
-           console.log(replaceAvatar)
-           console.log(userExists._id)
+ 
            if (edited === null){ 
               return res.status(500).json({
                   message:'something went wrong internally 2',
@@ -291,11 +289,6 @@ exports.editUserData = async(req, res, next)=>{
           }
               return res.status(201).json({
                   message:'image updated succesfully',
-                  newdata:edited,
-                  request:{
-                      type: 'POST',
-                      message: 'you can login using this link',
-                      url : `http://localhost:${process.env.PORT||5000}/api/v1/users/login`  
-                  } 
+                  newdata:edited, 
               })
    }
