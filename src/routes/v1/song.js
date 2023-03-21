@@ -8,7 +8,7 @@ const getFiles = uploads.fields([{name:'song', maxCount: 1 },{name:'songCover', 
 
   router.get ('/', getAllSongs);
   router.get ('/findsong', findOneSong);
-  router.post ('/upload',verifyUser,   getFiles, addSong); 
+  router.post ('/newsong',verifyUser,   getFiles, addSong); 
   router.patch ('/editsong', verifyUser, getFiles, editSong); 
   router.delete ('/deletesong',verifyUser, removeSong); 
  

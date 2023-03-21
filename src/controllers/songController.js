@@ -1,8 +1,8 @@
 const multer = require('multer'); 
 const dotenv = require('dotenv').config();
 const { addSong, getSongs, getOneSong,editSong,deleteSong  } = require('../repository/songRepo');
-const {  getAlbums, getOneAlbum,createAlbum,editAlbum,deleteAlbum  } = require('../repository/albumRepo');
-const {createArtist, getOneArtist, getArtists,removeArtist, editArtist } = require('../repository/artistRepo');
+const {  getAlbums, getOneAlbum,createAlbum,editAlbum,deleteAlbum,addSongToAlbum  } = require('../repository/albumRepo');
+const {createArtist, getOneArtist, getArtists,removeArtist,addAlbumToArtist , editArtist } = require('../repository/artistRepo');
 const { response } = require('express');
  
 
@@ -58,47 +58,69 @@ exports.addSong = async (req, res , next)=>{
     })  
   }  
 const songTitle  = req.body.songTitle;
- const album = await getOneAlbum({songAlbum: req.body.songAlbum})
- if (album === null ){
-   return res.status(400).json({
-    message:'the album does not exist, please start by creating an album with the name',
-    request: {
-        type: 'POST',
-        description: 'create a new album',
-        url:  `http://localhost:${process.env.PORT||5000}/api/albums/addalbum` 
-        }
-     })
+ const album = await getOneAlbum({albumName: req.body.songAlbum})
+ if (!album || album === null){
+    var newAlbum = await createAlbum({
+        albumCover :req.body.albumCover,
+        albumName : req.body.songAlbum,
+        artistName : req.body.artistName,
+        songId : req.body.songId,
+        albumYear :req.body.albumYear, 
+    });
+    console.log(`created album : ${newAlbum}`)
+    
  }
-
- var artist = await  getOneArtist({artistName:req.body.songArtist }) 
- if (artist === null) { 
+else{
+    newAlbum = album
+    console.log(`read album : ${newAlbum}`)
+} 
+ var artist = await  getOneArtist({artistName : req.body.songArtist })  
+ if (artist === null || !artist) { 
      var newArtist = await createArtist({
                     artistName: req.body.artistName, 
                     avatar: coverFile ,
-                    age: req.body.age, 
-                    bio:  req.body.bio 
-                    }) 
-                    
-    if (newArtist === null){
-        return response.status(400).json({message: 'Invalid parameters'})
-    } 
- } 
+                    albums: newAlbum._id,
+                    age: req.body.artistAge, 
+                    bio: req.body.artistBio 
+                    }) ;
 
+                    console.log(`created artist: ${newArtist}`)     
+    if (newArtist === null || !newArtist){
+        return response.status(400).json({message: 'Invalid parameters, please check your imputs and try again'})
+    } 
+ }
+ else{
+    newArtist = artist 
+    console.log(`read artist : ${newArtist}`)
+ } 
+  
 const songGenre = req.body.songGenre; 
-        const newSong =  await addSong( { 
-            songTitle :songTitle ,
-            artistName:newArtist.artistName,  
+         const newSong =  await addSong( { 
+            songTitle : songTitle ,
+            artistName: newArtist.artistName,  
             songAlbum: req.body.songAlbum,
-            artistId:newArtist._id, 
-            albumName:album.albumName, 
-            albumId:album._id, 
-            songGenre:songGenre, 
+            artistId: newArtist._id, 
+            albumName: req.body.albumName, 
+            albumId: newAlbum._id, 
+            songGenre: songGenre, 
             songYear: req.body.songYear,
             songDuration: req.body.songDuration,
             song: files['song'][0].path,
             songCover: coverFile 
             });
          
+         if(!newSong){ 
+         return response.status(500).json({message: 'something went wrong'});
+
+        } 
+      const updateAlbum = await addSongToAlbum( newAlbum._id , { songId : [newSong._id]})
+      if (!updateAlbum){
+     return response.status(500).json({message: 'couldnt add song to album'});
+     }
+     const updateArtist = await  addAlbumToArtist(newArtist._id, {albums:[newAlbum._id]}) 
+     if (!updateArtist){
+        return response.status(500).json({message: 'couldnt add album to artist'});
+        }
           res.status(200).json({
               message: 'Song added successfully',
                song: newSong,

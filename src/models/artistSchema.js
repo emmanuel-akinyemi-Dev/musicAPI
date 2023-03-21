@@ -6,7 +6,7 @@ const ArtistSchema = new mongoose.Schema({
     avatar: { type: String, default: 'https://i.ibb.co/5Y3m5Y1/default.jpg' },
     age: String, 
     bio: {type:String, default: 'singer and Song writer' },
-    album: { type: [mongoose.Types.ObjectId], ref: 'Album' } 
+    albums: { type: [mongoose.Types.ObjectId], ref: 'Album' } 
     });
 
 module.exports = mongoose.model('Artist', ArtistSchema);

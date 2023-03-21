@@ -54,16 +54,17 @@ exports.getplaulistFromUser  = async (query) => {
 
  exports.addSong = async(id, data)=>{  
         try{
+            const newData = {songs:[data.songId]}
           
-           return await Playlist.updateOne({_id: id}, {$push : data},)
+           return await Playlist.updateOne({_id: id}, {$push : newData} )
            
-        }
-        catch{ 
+        } 
+        catch(err){  
             return null ;
         }
  }; 
 
-  exports.deletePlaylist= async(query)=>{
+ exports.deletePlaylist= async(query)=>{
     try{
       return await Playlist.deleteOne(query).exec()
  
@@ -106,7 +107,8 @@ exports.getplaulistFromUser  = async (query) => {
        
     }
 }; 
-exports.editUserPlaylalyst = async(id, data)=>{ 
+
+ exports.editUserPlaylalyst = async(id, data)=>{ 
     try{
       
        return await Users.updateOne({_id:id}, {$push: data})

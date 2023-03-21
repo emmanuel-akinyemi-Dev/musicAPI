@@ -5,7 +5,7 @@
    
  exports.getArtists = async (query) => {
      try { 
-      return await Artist.find(query).populate('album').exec();
+      return await Artist.find(query).populate('albums').exec();
     
      }
      catch(err){
@@ -15,7 +15,7 @@
  }, 
  exports.getOneArtist = async (query) => {
      try { 
-       return await  Artist.findOne(query).populate('album').exec(); 
+       return await  Artist.findOne(query).populate('albums').exec(); 
  }
      catch(err){
          console.log(err);
@@ -62,6 +62,17 @@
          return null
      }
   }
+  exports.addAlbumToArtist = async(artistId, data)=>{ 
+    try{
+       // console.log(data);
+   
+       return await Artist.updateOne({_id: artistId}, {$push : data})
+       
+    }
+    catch{ 
+        return null ;
+    }
+};
  
   
  

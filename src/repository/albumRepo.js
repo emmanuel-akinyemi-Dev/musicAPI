@@ -28,8 +28,8 @@ exports.getOneAlbum = async (query) => {
 } ; 
 exports.createAlbum = async(query)=>{
 try{ 
-    const newArtist = new Album(query);  
-    return  await newArtist.save();
+    const newAlbum = new Album(query);  
+    return  await newAlbum.save();
        
 }   
  
@@ -67,11 +67,11 @@ exports.deleteAlbum = async(query)=>{
        
     }
 }; 
- exports.addSongToAlbum = async(song, data)=>{ 
+ exports.addSongToAlbum = async(albumId, data)=>{ 
     try{
-        console.log(data);
+      //  console.log(data);
    
-       return await Album.updateOne({songId: song}, {$push : data},)
+       return await Album.updateOne({_id: albumId}, {$push : data})
        
     }
     catch{ 

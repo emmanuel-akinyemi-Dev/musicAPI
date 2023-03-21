@@ -8,7 +8,7 @@ const AlbumSchema = new mongoose.Schema({
         type:String, 
     },
     albumYear:String,
-    artist:{
+    artistName:{
         type:String,
          required:true,
     },

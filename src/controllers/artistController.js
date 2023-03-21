@@ -1,5 +1,5 @@
 const multer = require('multer');
-const {createArtist, getOneArtist, getArtists,removeArtist, editArtist } = require('../repository/artistRepo');
+const {createArtist, getOneArtist, getArtists,removeArtist, editArtist,addAlbumToArtist } = require('../repository/artistRepo');
  
 
  
@@ -7,7 +7,7 @@ const {createArtist, getOneArtist, getArtists,removeArtist, editArtist } = requi
 exports.getAllArtist = async (req, res, next ) =>{
 
     const Artists = await  getArtists({}); 
-  
+   
 if (Artists === null || Artists.length < 1 ){ 
     return res.status(404).json({message:'no Artist found', 
     request:{
@@ -60,7 +60,7 @@ exports.addArtist = async (req, res , next)=>{
           bio : req.body.bio,
           avatar:  avatar,
           age: req.body.age ,
-          album: req.body.album 
+          albums: req.body.album 
       })   
           res.status(200).json({
               message: 'user created successfully',
@@ -132,5 +132,29 @@ exports.editArtist = async(req, res, next)=>{
                  }  
               } 
           })
-      } 
-    
+      }  
+ exports.addAlbum = async(req, res, next)=>{
+        const incoming = req.body 
+       const artistExist = await getOneArtist({_id: incoming.artistId})  
+       if (!artistExist ){
+        return res.status(400).json({message: 'Artist does not exist'});
+        } 
+        const updateArtist = await  addAlbumToArtist (artistExist._id, {albums:incoming.albumId}) 
+        if (!updateArtist){
+           return res.status(500).json({message: 'couldnt add album to artist'});
+           }
+              return res.status(201).json({
+                  message:'artist modified successfully',
+                  newdata:updateArtist,
+                  request:{
+                      type: 'POST',
+                      message: 'you can login using this link',
+                      url : `http://localhost:${process.env.PORT||5000}/api/artist/searchartist`,
+                     dependencies: {
+                        artistName:'vallid artist name string' 
+                     }  
+                  } 
+              })
+          } 
+          
+ 

@@ -151,8 +151,15 @@ exports.editAlbum= async(req, res, next)=>{
           })
  }
  exports.addSongtoAlbum = async(req, res, next)=>{ 
-  const albumExists = await getOneAlbum( {albumName: req.body.albumName})
+  if( req.body.albumName){
+    var albumExists = await getOneAlbum( {albumName: req.body.albumName})
  
+  }
+  else{
+      albumExists = await getOneAlbum( {_id: req.body.albumId})
+ 
+  }
+  
   if (albumExists === null){
       return res.status(404).json({message:'album not exist',  
       request:{
